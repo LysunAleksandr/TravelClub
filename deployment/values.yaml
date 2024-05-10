@@ -1,0 +1,15 @@
+ingress:
+  hosts:
+    - host: 'quiz.stage.crtweb.ru'
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          port:
+            name: http
+  tls:
+    - secretName: 'tls'
+      hosts:
+        - 'quiz.stage.crtweb.ru'
+
+image:
+  name: crt/quiz/backend

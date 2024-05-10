@@ -1,0 +1,39 @@
+services:
+  app:
+    build:
+      dockerfile: docker/php/Dockerfile
+      context: .
+      args:
+        UID: ${DUID:-1000}
+        GID: ${DGID:-1000}
+    environment:
+      COMPOSER_MEMORY_LIMIR: -1
+      COMPOSER_ALLOW_SUPERUSER: 1
+      XDEBUG_MODE: 'debug'
+      XDEBUG_CONFIG: 'client_host=${XDEBUG_HOST:-host.docker.internal} client_port=${XDEBUG_PORT:-9003} start_with_request=yes'
+    volumes:
+      - ./app:/var/www/app:cached
+
+  webapp:
+    image: nginx:alpine
+    ports:
+      - ${NGINX_PORT:-80}:80
+    volumes:
+      - ./app:/var/www/app
+      - ./docker/nginx/app.conf:/etc/nginx/conf.d/default.conf
+
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-webmaster}
+      POSTGRES_USER: ${POSTGRES_USER:-webmaster}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+
+
+volumes:
+  ###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
