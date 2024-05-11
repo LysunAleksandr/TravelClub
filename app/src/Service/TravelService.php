@@ -24,7 +24,7 @@ class TravelService
 
         $discountChildren = $age < self::AGE_OF_MAJORITY ? $this->discountChildrenRepository->getDiscountChildrenByClientAge($age) : null;
         if ($discountChildren) {
-            $discount = (1 - $discountChildren->getDiscount()/100) * $travel->getBasicCost();
+            $discount = $discountChildren->getDiscount()/100 * $travel->getBasicCost();
             if (null != $discountChildren->getMaxDiscount()) {
                 $discount = $discount > $discountChildren->getMaxDiscount() ? $discountChildren->getMaxDiscount() : $discount;
             }
@@ -52,7 +52,7 @@ class TravelService
         );
 
         if ($discountEarlyBooking) {
-            $discount = (1 - $discountEarlyBooking->getDiscount()/100) * $travel->getFullCost();
+            $discount = $discountEarlyBooking->getDiscount()/100 * $travel->getFullCost();
             if (null != $discountEarlyBooking->getMaxDiscount()) {
                 $discount = $discount > $discountEarlyBooking->getMaxDiscount() ? $discountEarlyBooking->getMaxDiscount() : $discount;
             }
