@@ -12,18 +12,19 @@ class TravelControllerTest extends WebTestCase
         yield ['json' => '{"basicCost": 100,"dateStart": "2027-05-01","dateBirth": "2000-05-11","datePayment": "2026-11-25"}', 'result' => Response::HTTP_OK];
     }
 
-    public function testCalculatePriceAction()
+    /**
+     * @dataProvider provideJson
+     */
+    public function testCalculatePriceAction($data, $result)
     {
         $client = static::createClient();
 
-        foreach ($this->provideJson() as $request) {
             $client->request('POST', '/api/v1/travel/calculate',
                 [],
                 [],
                 ['Content-Type' => 'application/json'],
-                $request['json']
+                $data
             );
-            $this->assertEquals($request['result'], $client->getResponse()->getStatusCode());
-        }
+            $this->assertEquals($result, $client->getResponse()->getStatusCode());
     }
 }

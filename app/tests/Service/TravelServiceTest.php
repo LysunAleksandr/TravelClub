@@ -33,33 +33,30 @@ class TravelServiceTest extends KernelTestCase
 
     public function provideData(): iterable
     {
-        yield 'fix93' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-11-25', 'result' => 93];
-        yield 'fix95' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-12-25', 'result' => 95];
-        yield 'fix97' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2027-01-25', 'result' => 97];
-        yield 'fix93' => ['basicCost' => 100, 'dateStart' => '2027-01-15', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-08-25', 'result' => 93];
-        yield 'fix95' => ['basicCost' => 100, 'dateStart' => '2027-01-15', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-09-25', 'result' => 95];
-        yield 'fix97' => ['basicCost' => 100, 'dateStart' => '2027-01-15', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-10-25', 'result' => 97];
-        yield 'fix90' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2008-05-11', 'datePayment' => '2023-11-25', 'result' => 90];
-        yield 'fix70' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2013-05-11', 'datePayment' => '2023-11-25', 'result' => 70];
-        yield 'fix70' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2019-05-11', 'datePayment' => '2023-11-25', 'result' => 20];
+        yield 'discount7' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-11-25', 'result' => 93];
+        yield 'discount5' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-12-25', 'result' => 95];
+        yield 'discount3' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2027-01-25', 'result' => 97];
+        yield 'children12' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2008-05-11', 'datePayment' => '2023-11-25', 'result' => 90];
+        yield 'children6' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2013-05-11', 'datePayment' => '2023-11-25', 'result' => 70];
+        yield 'children3' => ['basicCost' => 100, 'dateStart' => '2027-05-01', 'dateBirth' => '2019-05-11', 'datePayment' => '2023-11-25', 'result' => 20];
+        yield 'max1500' => ['basicCost' => 100000, 'dateStart' => '2027-05-01', 'dateBirth' => '2000-05-11', 'datePayment' => '2026-11-25', 'result' => 98500];
     }
 
-    public function testCreateAndCheck()
+    /**
+     * @dataProvider provideData
+     */
+    public function testCreateAndCheck($basicCost, $dateStart, $dateBirth, $datePayment, $resultSum): void
     {
-        foreach ($this->provideData() as $data) {
             $travel = new Travel();
-            $travel->setBasicCost($data['basicCost']);
-            $travel->setDateBirth( \date_create($data['dateBirth']));
-            $travel->setDatePayment(\date_create($data['datePayment']));
-            $travel->setDateStart(\date_create($data['dateStart']));
+            $travel->setBasicCost($basicCost);
+            $travel->setDateBirth( \date_create($dateBirth));
+            $travel->setDatePayment(\date_create($datePayment));
+            $travel->setDateStart(\date_create($dateStart));
 
             $result = $this->service->calculate($travel);
 
             self::assertNotNull($result);
             self::assertInstanceOf(Travel::class, $result);
-            self::assertEquals($data['result'], $result->getFullCost());
-        }
-
-
+            self::assertEquals($resultSum, $result->getFullCost());
     }
 }
